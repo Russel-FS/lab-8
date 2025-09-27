@@ -1,10 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { PaperProvider, MD3LightTheme as DefaultTheme } from 'react-native-paper';
-import DetallesCliente from '~/DetallesCliente';
-import { Home } from '~/Home'; 
-import NuevoCliente from '~/NuevoCliente';
-import { Barra } from '~/components/Barra';
+import DetallesAnalisis from './src/DetallesAnalisis';
+import { Home } from './src/Home'; 
+import NuevoAnalisis from './src/NuevoAnalisis';
+import { Barra } from './src/components/Barra';
 
 const Stack = createStackNavigator();
 
@@ -24,7 +24,7 @@ const App = () => {
         <Stack.Navigator 
           initialRouteName="Home"
           screenOptions={{
-            header: () => <Barra />,
+            header: (props) => <Barra   />,
           }}
         >
           <Stack.Screen 
@@ -32,12 +32,12 @@ const App = () => {
             component={Home} 
           />
           <Stack.Screen 
-            name="NuevoCliente" 
-            component={NuevoCliente}
+            name="NuevoAnalisis" 
+            component={NuevoAnalisis}
           />
           <Stack.Screen 
-            name="DetallesCliente" 
-            component={DetallesCliente}
+            name="DetallesAnalisis" 
+            component={DetallesAnalisis}
           />
         </Stack.Navigator>
       </NavigationContainer>

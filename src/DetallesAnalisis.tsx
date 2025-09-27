@@ -3,45 +3,45 @@ import { Text, Card, Avatar, Button, useTheme, ActivityIndicator, Portal, Dialog
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState, useEffect } from 'react';
-import { Mail, Phone, Building2, UserCircle2 } from 'lucide-react-native';
-import { Cliente } from '~/models/Cliente';
+import { Analisis } from '~/models/Analisis';
 import { API_URL } from '~/config/api';
+import { UserCircle2, Hash, FileText, DollarSign } from 'lucide-react-native';
 
 type RootStackParamList = {
   Home: undefined;
-  NuevoCliente: { id?: string };
-  DetallesCliente: { id: string };
+  NuevoAnalisis: { id?: string };
+  DetallesAnalisis: { id: string };
 };
 
-type DetallesClienteRouteProp = RouteProp<RootStackParamList, 'DetallesCliente'>;
+type DetallesAnalisisRouteProp = RouteProp<RootStackParamList, 'DetallesAnalisis'>;
 
-const DetallesCliente = () => {
+const DetallesAnalisis = () => {
   const theme = useTheme();
-  const route = useRoute<DetallesClienteRouteProp>();
+  const route = useRoute<DetallesAnalisisRouteProp>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [analisis, setAnalisis] = useState<Analisis | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const cargarCliente = async () => {
+  const cargarAnalisis = async () => {
     try {
-      const response = await fetch(`${API_URL}/clientes/${route.params.id}`);
+      const response = await fetch(`${API_URL}/analisis/${route.params.id}`);
       const data = await response.json();
-      setCliente(data);
+      setAnalisis(data);
     } catch (error) {
-      console.log('Error al cargar el cliente:', error);
+      console.log('Error al cargar el analisis:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    cargarCliente();
+    cargarAnalisis();
   }, [route.params.id]);
 
   const handleEliminar = async () => {
     try {
-      await fetch(`${API_URL}/clientes/${route.params.id}`, {
+      await fetch(`${API_URL}/analisis/${route.params.id}`, {
         method: 'DELETE'
       });
       navigation.navigate('Home');
@@ -58,10 +58,10 @@ const DetallesCliente = () => {
     );
   }
 
-  if (!cliente) {
+  if (!analisis) {
     return (
       <View style={styles.errorContainer}>
-        <Text>No se encontró el cliente</Text>
+        <Text>No se encontró el análisis</Text>
       </View>
     );
   }
@@ -72,7 +72,7 @@ const DetallesCliente = () => {
         <View style={styles.avatarContainer}>
           <Avatar.Text
             size={80}
-            label={cliente.nombre.substring(0, 2).toUpperCase()}
+            label={analisis.nombre.substring(0, 2).toUpperCase()}
             style={styles.avatar}
           />
         </View>
@@ -83,31 +83,47 @@ const DetallesCliente = () => {
               <UserCircle2 color={theme.colors.primary} size={24} />
               <View style={styles.infoText}>
                 <Text style={styles.label}>Nombre</Text>
-                <Text style={styles.value}>{cliente.nombre}</Text>
+                <Text style={styles.value}>{analisis.nombre}</Text>
               </View>
             </View>
 
             <View style={styles.infoRow}>
-              <Building2 color={theme.colors.primary} size={24} />
+              <Hash color={theme.colors.primary} size={24} />
               <View style={styles.infoText}>
-                <Text style={styles.label}>Empresa</Text>
-                <Text style={styles.value}>{cliente.empresa}</Text>
+                <Text style={styles.label}>Edad</Text>
+                <Text style={styles.value}>{analisis.edad}</Text>
               </View>
             </View>
 
             <View style={styles.infoRow}>
-              <Phone color={theme.colors.primary} size={24} />
+              <FileText color={theme.colors.primary} size={24} />
               <View style={styles.infoText}>
-                <Text style={styles.label}>Teléfono</Text>
-                <Text style={styles.value}>{cliente.telefono}</Text>
+                <Text style={styles.label}>Tipo de Análisis</Text>
+                <Text style={styles.value}>Tipo {analisis.tipoAnalisis}</Text>
               </View>
             </View>
 
             <View style={styles.infoRow}>
-              <Mail color={theme.colors.primary} size={24} />
+              <DollarSign color={theme.colors.primary} size={24} />
               <View style={styles.infoText}>
-                <Text style={styles.label}>Correo</Text>
-                <Text style={styles.value}>{cliente.correo}</Text>
+                <Text style={styles.label}>Costo Base</Text>
+                <Text style={styles.value}>S/. {analisis.costoBase.toFixed(2)}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoRow}>
+              <DollarSign color={theme.colors.primary} size={24} />
+              <View style={styles.infoText}>
+                <Text style={styles.label}>Costo Adicional</Text>
+                <Text style={styles.value}>S/. {analisis.costoAdicional.toFixed(2)}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoRow}>
+              <DollarSign color={theme.colors.primary} size={24} />
+              <View style={styles.infoText}>
+                <Text style={styles.label}>Costo Final</Text>
+                <Text style={styles.value}>S/. {analisis.costoFinal.toFixed(2)}</Text>
               </View>
             </View>
           </View>
@@ -117,7 +133,7 @@ const DetallesCliente = () => {
       <View style={styles.buttonContainer}>
         <Button 
           mode="contained" 
-          onPress={() => navigation.navigate('NuevoCliente', { id: route.params.id })}
+          onPress={() => navigation.navigate('NuevoAnalisis', { id: route.params.id })}
           style={[styles.button, { backgroundColor: theme.colors.primary }]}
         >
           Editar
@@ -133,9 +149,9 @@ const DetallesCliente = () => {
 
       <Portal>
         <Dialog visible={showDeleteDialog} onDismiss={() => setShowDeleteDialog(false)}>
-          <Dialog.Title>¿Desea eliminar este cliente?</Dialog.Title>
+          <Dialog.Title>¿Desea eliminar este análisis?</Dialog.Title>
           <Dialog.Content>
-            <Text>Esta acción no se puede deshacer. Se eliminará permanentemente el registro del cliente.</Text>
+            <Text>Esta acción no se puede deshacer. Se eliminará permanentemente el registro del análisis.</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setShowDeleteDialog(false)}>Cancelar</Button>
@@ -213,4 +229,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DetallesCliente;
+export default DetallesAnalisis;

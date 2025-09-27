@@ -1,18 +1,22 @@
 {
-  "clientes": [
+  "analisis": [
     {
-      "nombre": "flores",
-      "telefono": "9923432",
-      "correo": "russelflores@gmail.com",
-      "empresa": "Peru",
-      "id": "e6ec"
+      "nombre": "Paciente 2",
+      "edad": 30,
+      "tipoAnalisis": 1,
+      "costoBase": 25,
+      "costoAdicional": 0,
+      "costoFinal": 25,
+      "id": "2"
     },
     {
-      "id": "ac32",
       "nombre": "Russel",
-      "telefono": "99254324",
-      "correo": "fs@gmail.com",
-      "empresa": "Russel"
+      "edad": 20,
+      "tipoAnalisis": 1,
+      "costoBase": 25,
+      "costoAdicional": 2.5,
+      "costoFinal": 27.5,
+      "id": "a80e"
     }
   ]
 }

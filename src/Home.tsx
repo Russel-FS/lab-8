@@ -1,42 +1,43 @@
 import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Card, Avatar, ActivityIndicator, useTheme } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { API_URL } from '~/config/api';
-import { Cliente } from '~/models/Cliente';
-import { Mail, Phone } from 'lucide-react-native';
+import { Analisis } from '~/models/Analisis';
 import { NoRegistros } from '~/components/NoRegistros';
 
 type RootStackParamList = {
   Home: undefined;
-  NuevoCliente: undefined;
-  DetallesCliente: { id: string };
+  NuevoAnalisis: undefined;
+  DetallesAnalisis: { id: string };
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const Home = () => {
   const navigation = useNavigation<NavigationProp>();
-  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [analisis, setAnalisis] = useState<Analisis[]>([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
-  const cargarClientes = async () => {
+  const cargarAnalisis = async () => {
     try {
-      const response = await fetch(`${API_URL}/clientes`);
+      const response = await fetch(`${API_URL}/analisis`);
       const data = await response.json();
-      setClientes(data);
+      setAnalisis(data);
     } catch (error) {
-      console.log('Error al cargar los clientes:', error);
+      console.log('Error al cargar los analisis:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    cargarClientes();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      cargarAnalisis();
+    }, [])
+  );
 
   if (loading) {
     return (
@@ -49,47 +50,41 @@ export const Home = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={clientes}
+        data={analisis}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => navigation.navigate('DetallesCliente', { id: item.id.toString() })}
+            onPress={() => navigation.navigate('DetallesAnalisis', { id: item.id.toString() })}
           >
             <Card style={styles.card} mode="outlined">
               <Card.Title
                 title={item.nombre}
-                subtitle={item.empresa}
+                subtitle={`Edad: ${item.edad}`}
                 left={(props) => (
                   <Avatar.Text
                     {...props}
                     label={item.nombre.substring(0, 2).toUpperCase()}
                     color="white"
-                    style={{ backgroundColor: theme.colors.primary }}
+                    
                   />
                 )}
               />
               <Card.Content style={styles.cardContent}>
-                <View style={styles.contactInfo}>
-                  <View style={styles.contactItem}>
-                    <Phone size={16} color={theme.colors.primary} />
-                    <Text variant="bodyMedium" style={styles.contactText}>
-                      {item.telefono}
-                    </Text>
-                  </View>
-                  <View style={styles.contactItem}>
-                    <Mail size={16} color={theme.colors.primary} />
-                    <Text variant="bodyMedium" style={styles.contactText}>
-                      {item.correo}
-                    </Text>
-                  </View>
+                <View style={styles.infoItem}>
+                    <Text variant="bodyMedium" style={styles.infoLabel}>Costo Adicional: </Text>
+                    <Text variant="bodyMedium" style={styles.infoText}>S/. {item.costoAdicional.toFixed(2)}</Text>
+                </View>
+                <View style={styles.infoItem}>
+                    <Text variant="bodyMedium" style={styles.infoLabel}>Costo Final: </Text>
+                    <Text variant="bodyMedium" style={styles.infoText}>S/. {item.costoFinal.toFixed(2)}</Text>
                 </View>
               </Card.Content>
             </Card>
           </TouchableOpacity>
         )}
       />
-      {clientes.length === 0 && !loading && <NoRegistros />}
+      {analisis.length === 0 && !loading && <NoRegistros />}
     </View>
   );
 };
@@ -110,16 +105,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
-  contactInfo: {
-    marginTop: 8,
-  },
-  contactItem: {
+  infoItem: {
     flexDirection: 'row',
-    alignItems: 'center',
     marginTop: 4,
   },
-  contactText: {
-    marginLeft: 8,
+  infoLabel: {
+    fontWeight: 'bold',
+  },
+  infoText: {
+    marginLeft: 4,
     color: '#666',
   },
   loadingContainer: {
@@ -127,5 +121,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
 });
